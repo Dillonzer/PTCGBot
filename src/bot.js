@@ -12,8 +12,23 @@ function Card(name, set, number, cardText, imageLink)
     this.ImageLink = imageLink;
 }
 
-GetAllCards()
+function CommandCooldown(channel, command, time)
+{
+    this.Channel = channel,
+    this.Command = command,
+    this.Time = time
+}
+
 var allCards = []
+var commandCooldowns = []
+var channels = [
+    'Dillonzer',
+    'TrickyGym',
+    'linty_rosecup',
+    'Azulgg',
+    'RamboFW',
+    'nuetronptcg'
+  ]
 
 // Define configuration options
 const opts = {
@@ -21,10 +36,11 @@ const opts = {
     username: process.env.BOT_NAME,
     password: process.env.OAUTH_TOKEN
   },
-  channels: [
-    'Dillonzer'
-  ]
+  channels: channels
 };
+
+GetAllCards()
+populateCooldowns()
 
 // Create a client with our options
 const client = new tmi.client(opts);
@@ -37,36 +53,48 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 // Called every time a message comes in
-function onMessageHandler (target, context, msg, self) {
-  if (self) { return; } // Ignore messages from the bot
+function onMessageHandler (channel, context, msg, self) 
+{
+    if (self) { return; } // Ignore messages from the bot
 
-  if (msg === '!card')
-  {
-      return;
-  }
-
-  if(msg === '!cardhelp')
-  {      
-    client.say(target, "Example !card fst mew vmax")
-    return
-  }
-
-  const command = msg.split(' ');
-
-  if (command[0] === '!card') {
-    var cardDetails = msg.replace('!card', '')
-    var setSplit  = cardDetails.split(' ')
-    if(setSplit.length < 3)
+    if (msg === '!card')
     {
-        client.say(target, "Please use the command as !card setAbbr cardName")
+        return;
+    }
+
+    if(msg === '!cardhelp')
+    {      
+        client.say(channel, "Example !card fst mew vmax")
         return
     }
-    var set = setSplit[1]
-    var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
-    var cardAttack = GetCardAttack(set, cardName);
-    client.say(target, `${cardAttack}`);
-    console.log(`* Executed ${command[0]} command`);
-  }
+
+    const command = msg.split(' ');
+
+    if (command[0] === '!card') 
+    {
+        //check timeouts
+        var cooldown = commandCooldowns.find(x => x.Channel.toLowerCase() === channel.toLowerCase())
+        let timeCheck = new Date().getTime()
+        
+        if(timeCheck >= cooldown.Time)
+        {
+            var cardDetails = msg.replace('!card', '')
+            var setSplit  = cardDetails.split(' ')
+            if(setSplit.length < 3)
+            {
+                client.say(channel, "Please use the command as !card setAbbr cardName")
+                return
+            }
+            var set = setSplit[1]
+            var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
+            var cardAttack = GetCardAttack(set, cardName);
+            client.say(channel, cardAttack);
+            console.log(`* Executed ${command[0]} command`);
+            let cdTime = new Date().getTime()              
+            var objIndex = commandCooldowns.findIndex((x => x.Channel.toLowerCase() === channel.toLowerCase()));
+            commandCooldowns[objIndex].Time = cdTime + 10000
+        }
+    }
 }
 
 function GetCardAttack (set, cardName) {
@@ -143,4 +171,13 @@ function nthIndex(str, pat, n){
         if (i < 0) break;
     }
     return i;
+}
+
+function populateCooldowns()
+{
+    var cdTime = new Date().getTime()
+    for(var channel in channels)
+    {        
+        commandCooldowns.push(new CommandCooldown(`#${channels[channel]}`, '!card', cdTime))
+    }
 }
