@@ -9,11 +9,10 @@
     "node-fetch": "^3.2.0",
     "tmi.js": "^1.8.5"
   },
+  "engines": { "node": "16.x" },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "scripts": { "start": "node bot.js" }
 }
