@@ -54,14 +54,6 @@ client.on('connected', onConnectedHandler);
 // Connect to Twitch:
 client.connect();
 
-var server = http.createServer(function (req, res) {   // 2 - creating server
-
-    //handle incomming requests here..
-
-});
-
-server.listen(5000); //3 - listen for any incoming requests
-
 // Called every time a message comes in
 function onMessageHandler (channel, context, msg, self) 
 {
