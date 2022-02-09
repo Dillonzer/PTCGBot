@@ -27,7 +27,7 @@ var channels = [
     'linty_rosecup',
     'Azulgg',
     'RamboFW',
-    'nuetronptcg'
+    'neutronptcg'
   ]
 
 // Define configuration options
