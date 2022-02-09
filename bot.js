@@ -1,6 +1,8 @@
 import fetch from "node-fetch";
 import tmi from 'tmi.js'
 import dotenv from 'dotenv'
+import http from 'http'; // 1 - Import Node.js core module
+
 dotenv.config();
 
 function Card(name, set, number, cardText, imageLink)
@@ -51,6 +53,14 @@ client.on('connected', onConnectedHandler);
 
 // Connect to Twitch:
 client.connect();
+
+var server = http.createServer(function (req, res) {   // 2 - creating server
+
+    //handle incomming requests here..
+
+});
+
+server.listen(5000); //3 - listen for any incoming requests
 
 // Called every time a message comes in
 function onMessageHandler (channel, context, msg, self) 
