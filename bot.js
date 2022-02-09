@@ -66,7 +66,13 @@ function onMessageHandler (channel, context, msg, self)
 
     if(msg === '!cardhelp')
     {      
-        client.say(channel, "Example !card fst mew vmax")
+        client.say(channel, "https://dillonzer.github.io/ptcgBot.html")
+        return
+    }
+    
+    if(msg === '!setcodes')
+    {
+        client.say(channel, "https://dillonzer.github.io/ptcgBot.html")
         return
     }
 
