@@ -1,17 +1,20 @@
 import fetch from "node-fetch";
 import tmi from 'tmi.js'
 import dotenv from 'dotenv'
-import http from 'http'; // 1 - Import Node.js core module
 
 dotenv.config();
 
-function Card(name, set, number, cardText, imageLink)
+function Card(name, set, number, cardText, hp, weakness, resistance, retreatCost, type)
 {
     this.Name = name;
     this.Set = set;
     this.Number = number;
     this.CardText = cardText;
-    this.ImageLink = imageLink;
+    this.Hp = hp,
+    this.Weakness = weakness,
+    this.Resistance = resistance,
+    this.RetreatCost = retreatCost,
+    this.Type = type
 }
 
 function CommandCooldown(channel, command, time)
@@ -97,7 +100,7 @@ function onMessageHandler (channel, context, msg, self)
             var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
             var cardAttack = GetCardAttack(set, cardName);
             client.say(channel, cardAttack);
-            console.log(`* Executed ${command[0]} command`);
+            console.log(`* Executed ${command[0]} command on ${channel}`);
             let cdTime = new Date().getTime()              
             var objIndex = commandCooldowns.findIndex((x => x.Channel.toLowerCase() === channel.toLowerCase()));
             commandCooldowns[objIndex].Time = cdTime + 10000
@@ -119,7 +122,43 @@ function GetCardAttack (set, cardName) {
                 var card = filterCount.find(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase())
                 if(card != undefined || card != null)
                 {
-                    return `${card.Name} | ${card.Set} | ${card.CardText}`
+                    var cardType = card.Type
+                    cardType = cardType.replace("Fire","[R]")
+                    cardType = cardType.replace("Fairy","[Y]")
+                    cardType = cardType.replace("Fighting","[F]")
+                    cardType = cardType.replace("Water","[W]")
+                    cardType = cardType.replace("Colorless","[C]")
+                    cardType = cardType.replace("Lightning","[L]")
+                    cardType = cardType.replace("Grass","[G]")
+                    cardType = cardType.replace("Psychic","[P]")
+                    cardType = cardType.replace("Darkness","[D]")
+                    cardType = cardType.replace("Metal","[M]")
+
+                    if(card.Hp == "")
+                    {
+                        return `${cardType} | ${card.Name} | ${card.CardText}`
+                    }
+                    else
+                    {
+                        var weakness = "None"
+                        var resistance = "None"
+                        var retreatCost = "0"
+
+                        if(card.Weakness != "")
+                        {
+                            weakness = card.Weakness
+                        }
+                        if(card.Resistance != "")
+                        {
+                            resistance = card.Resistance
+                        }
+                        if(card.RetreatCost != "")
+                        {
+                            retreatCost = card.RetreatCost
+                        }
+
+                        return `${cardType} | ${card.Name} (${card.Hp} HP) | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
+                    }
                 }
                 else
                 {
@@ -136,7 +175,43 @@ function GetCardAttack (set, cardName) {
             var card = allCards.find(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase())
             if(card != undefined || card != null)
             {
-                return `${card.Name} | ${card.Set} |  ${card.CardText}`
+                var cardType = card.Type
+                cardType = cardType.replace("Fire","[R]")
+                cardType = cardType.replace("Fairy","[Y]")
+                cardType = cardType.replace("Fighting","[F]")
+                cardType = cardType.replace("Water","[W]")
+                cardType = cardType.replace("Colorless","[C]")
+                cardType = cardType.replace("Lightning","[L]")
+                cardType = cardType.replace("Grass","[G]")
+                cardType = cardType.replace("Psychic","[P]")
+                cardType = cardType.replace("Darkness","[D]")
+                cardType = cardType.replace("Metal","[M]")
+
+                if(card.Hp == "")
+                {
+                    return `${cardType} | ${card.Name} | ${card.CardText}`
+                }
+                else
+                {
+                    var weakness = "None"
+                    var resistance = "None"
+                    var retreatCost = "0"
+
+                    if(card.Weakness != "")
+                    {
+                        weakness = card.Weakness
+                    }
+                    if(card.Resistance != "")
+                    {
+                        resistance = card.Resistance
+                    }
+                    if(card.RetreatCost != "")
+                    {
+                        retreatCost = card.RetreatCost
+                    }
+
+                    return `${cardType} | ${card.Name} (${card.Hp} HP) | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
+                }
             }
             else
             {
@@ -163,7 +238,7 @@ function GetAllCards()
     return response.json();
     }).then(data => {
         for(var index in data) {
-            allCards.push(new Card(data[index].name, data[index].set.ptcgoCode, data[index].number, data[index].cardText, data[index].imageUrlHiRes));
+            allCards.push(new Card(data[index].name, data[index].set.ptcgoCode, data[index].number, data[index].cardText, data[index].hp, data[index].weakness, data[index].resistance, data[index].retreatCost, data[index].type));
         }  
         console.log("All Cards Loaded")
         
