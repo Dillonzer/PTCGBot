@@ -134,7 +134,7 @@ function GetCardAttack (set, cardName) {
                     cardType = cardType.replace("Darkness","[D]")
                     cardType = cardType.replace("Metal","[M]")
 
-                    if(card.Hp == "")
+                    if(card.Hp == null)
                     {
                         return `${cardType} | ${card.Name} | ${card.CardText}`
                     }
@@ -144,15 +144,15 @@ function GetCardAttack (set, cardName) {
                         var resistance = "None"
                         var retreatCost = "0"
 
-                        if(card.Weakness != "")
+                        if(card.Weakness != null)
                         {
                             weakness = card.Weakness
                         }
-                        if(card.Resistance != "")
+                        if(card.Resistance != null)
                         {
                             resistance = card.Resistance
                         }
-                        if(card.RetreatCost != "")
+                        if(card.RetreatCost != null)
                         {
                             retreatCost = card.RetreatCost
                         }
@@ -187,7 +187,7 @@ function GetCardAttack (set, cardName) {
                 cardType = cardType.replace("Darkness","[D]")
                 cardType = cardType.replace("Metal","[M]")
 
-                if(card.Hp == "")
+                if(card.Hp == null)
                 {
                     return `${cardType} | ${card.Name} | ${card.CardText}`
                 }
@@ -197,15 +197,15 @@ function GetCardAttack (set, cardName) {
                     var resistance = "None"
                     var retreatCost = "0"
 
-                    if(card.Weakness != "")
+                    if(card.Weakness != null)
                     {
                         weakness = card.Weakness
                     }
-                    if(card.Resistance != "")
+                    if(card.Resistance != null)
                     {
                         resistance = card.Resistance
                     }
-                    if(card.RetreatCost != "")
+                    if(card.RetreatCost != null)
                     {
                         retreatCost = card.RetreatCost
                     }
