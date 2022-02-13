@@ -53,8 +53,11 @@ client.on('connected', onConnectedHandler);
 
 client.connect();
 
-function commandSwitcher(msg, channel)
+// #region Bot Function
+function onMessageHandler (channel, context, msg, self) 
 {
+    if (self) { return; } // Ignore messages from the bot    
+    
     const command = msg.split(' ');
 
     if (msg === '!card')
@@ -64,34 +67,34 @@ function commandSwitcher(msg, channel)
 
     if(command[0] === '!cardhelp' || command[0] === '!setcodes')
     {      
-        helpInfo(channel)
-        return
+        if(!onCooldown(channel))
+        {
+            setCooldown(channel)
+            helpInfo(channel)
+            console.log(`* Executed ${msg} on ${channel}`);
+        }
     }
 
 
     if (command[0] === '!card') 
     {
-        cardCommand(msg, channel)
+        if(!onCooldown(channel))
+        {
+            setCooldown(channel)
+            cardCommand(msg, channel)
+            console.log(`* Executed ${msg} on ${channel}`);
+        }
     }
 
     if(command[0] === '!cardnum')
     {
-        cardNumCommand(msg, channel)
+        if(!onCooldown(channel))
+        {
+            setCooldown(channel)
+            cardNumCommand(msg, channel)
+            console.log(`* Executed ${msg} on ${channel}`);
+        }
     }
-}
-
-// #region Bot Function
-function onMessageHandler (channel, context, msg, self) 
-{
-    if (self) { return; } // Ignore messages from the bot
-    
-    if(!onCooldown(channel))
-    {
-        setCooldown(channel)
-        commandSwitcher(msg, channel)
-        console.log(`* Executed ${msg} on ${channel}`);
-    }
-
    
 }
 
