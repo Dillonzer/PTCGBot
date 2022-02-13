@@ -35,7 +35,6 @@ var channels = [
     'neutronptcg'
   ]
 
-// Define configuration options
 const opts = {
   identity: {
     username: process.env.BOT_NAME,
@@ -44,71 +43,121 @@ const opts = {
   channels: channels
 };
 
-GetAllCards()
+getAllCards()
 populateCooldowns()
 
-// Create a client with our options
 const client = new tmi.client(opts);
 
-// Register our event handlers (defined below)
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
-// Connect to Twitch:
 client.connect();
 
-// Called every time a message comes in
-function onMessageHandler (channel, context, msg, self) 
+function commandSwitcher(msg, channel)
 {
-    if (self) { return; } // Ignore messages from the bot
+    const command = msg.split(' ');
 
     if (msg === '!card')
     {
         return;
     }
 
-    if(msg === '!cardhelp')
+    if(command[0] === '!cardhelp' || command[0] === '!setcodes')
     {      
-        client.say(channel, "https://dillonzer.github.io/ptcgBot.html")
-        return
-    }
-    
-    if(msg === '!setcodes')
-    {
-        client.say(channel, "https://dillonzer.github.io/ptcgBot.html")
+        helpInfo(channel)
         return
     }
 
-    const command = msg.split(' ');
 
     if (command[0] === '!card') 
     {
-        //check timeouts
-        var cooldown = commandCooldowns.find(x => x.Channel.toLowerCase() === channel.toLowerCase())
-        let timeCheck = new Date().getTime()
-        
-        if(timeCheck >= cooldown.Time)
-        {
-            var cardDetails = msg.replace('!card', '')
-            var setSplit  = cardDetails.split(' ')
-            if(setSplit.length < 3)
-            {
-                client.say(channel, "Please use the command as !card setAbbr cardName")
-                return
-            }
-            var set = setSplit[1]
-            var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
-            var cardAttack = GetCardAttack(set, cardName);
-            client.say(channel, cardAttack);
-            console.log(`* Executed ${command[0]} command on ${channel}`);
-            let cdTime = new Date().getTime()              
-            var objIndex = commandCooldowns.findIndex((x => x.Channel.toLowerCase() === channel.toLowerCase()));
-            commandCooldowns[objIndex].Time = cdTime + 10000
-        }
+        cardCommand(msg, channel)
+    }
+
+    if(command[0] === '!cardnum')
+    {
+        cardNumCommand(msg, channel)
     }
 }
 
-function GetCardAttack (set, cardName) {
+// #region Bot Function
+function onMessageHandler (channel, context, msg, self) 
+{
+    if (self) { return; } // Ignore messages from the bot
+    
+    if(!onCooldown(channel))
+    {
+        setCooldown(channel)
+        commandSwitcher(msg, channel)
+        console.log(`* Executed ${msg} on ${channel}`);
+    }
+
+   
+}
+
+function onConnectedHandler (addr, port) 
+{
+  console.log(`* Connected to ${addr}:${port}`);
+}
+
+function getAllCards()
+{
+    var apiCall = process.env.API_URL+"/api/cards";
+    fetch(apiCall).then(response => {
+    return response.json();
+    }).then(data => {
+        for(var index in data) {
+            allCards.push(new Card(data[index].name, data[index].set.ptcgoCode, data[index].number, data[index].cardText, data[index].hp, data[index].weakness, data[index].resistance, data[index].retreatCost, data[index].type));
+        }  
+        console.log("All Cards Loaded")
+        
+    }).catch(err => {
+        console.log(err)
+    });
+}
+// #endregion
+
+// #region Commands
+function cardCommand(msg, channel)
+{
+    var cardDetails = msg.replace('!card', '')
+    var setSplit  = cardDetails.split(' ')
+    if(setSplit.length < 3)
+    {
+        client.say(channel, "Please use the command as !card setAbbr cardName")
+        return
+    }
+    var set = setSplit[1]
+    var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
+    var cardAttack = getCardAttack(set, cardName);
+    client.say(channel, cardAttack);
+}
+
+function cardNumCommand(msg, channel)
+{
+    var cardDetails = msg.replace('!cardnum', '')
+    var setSplit  = cardDetails.split(' ')
+    if(setSplit.length < 4)
+    {
+        client.say(channel, "Please use the command as !cardnum setAbbr num cardName")
+        return
+    }
+    var set = setSplit[1]
+    var num = setSplit[2]
+    var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 3))
+    var cardAttack = getCardAttackWithNumber(set, cardName, num);
+    client.say(channel, cardAttack);
+}
+
+function helpInfo(channel)
+{    
+    client.say(channel, "All the info you need is here: https://dillonzer.github.io/ptcgBot.html")
+}
+// #endregion
+
+// #region Command Helpers
+function getCardAttack (set, cardName) 
+{
     var filterCount = allCards.filter(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase())
     if(filterCount.length > 0)
     {        
@@ -167,7 +216,12 @@ function GetCardAttack (set, cardName) {
             }
             else
             {
-                return `There are ${filterCount.length} versions of this card in this set. Cannot show each.`
+                var returnString = `There are ${filterCount.length} versions of this card in this set. Please use one of the following commands below to view the card you want:\n`
+                for(var i in filterCount)
+                {
+                    returnString += `< !cardnum ${filterCount[i].Set} ${filterCount[i].Number} ${filterCount[i].Name} >\n`
+                }
+                return returnString
             }
         }
         else
@@ -226,28 +280,82 @@ function GetCardAttack (set, cardName) {
     }
 }
 
-// Called every time the bot connects to Twitch chat
-function onConnectedHandler (addr, port) {
-  console.log(`* Connected to ${addr}:${port}`);
-}
-
-function GetAllCards()
+function getCardAttackWithNumber(set, cardName, number)
 {
-    var apiCall = process.env.API_URL+"/api/cards";
-    fetch(apiCall).then(response => {
-    return response.json();
-    }).then(data => {
-        for(var index in data) {
-            allCards.push(new Card(data[index].name, data[index].set.ptcgoCode, data[index].number, data[index].cardText, data[index].hp, data[index].weakness, data[index].resistance, data[index].retreatCost, data[index].type));
+    var filterCount = allCards.filter(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase() && x.Number.toLowerCase() == number.toLowerCase())
+    if(filterCount.length > 0)
+    {   
+        var card = filterCount.find(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase() && x.Number.toLowerCase() == number.toLowerCase())
+        if(card != undefined || card != null)
+        {
+            var cardType = card.Type
+            cardType = cardType.replace("Fire","[R]")
+            cardType = cardType.replace("Fairy","[Y]")
+            cardType = cardType.replace("Fighting","[F]")
+            cardType = cardType.replace("Water","[W]")
+            cardType = cardType.replace("Colorless","[C]")
+            cardType = cardType.replace("Lightning","[L]")
+            cardType = cardType.replace("Grass","[G]")
+            cardType = cardType.replace("Psychic","[P]")
+            cardType = cardType.replace("Darkness","[D]")
+            cardType = cardType.replace("Metal","[M]")
+
+            if(card.Hp == null)
+            {
+                return `${cardType} | ${card.Name} | ${card.CardText}`
+            }
+            else
+            {
+                var weakness = "None"
+                var resistance = "None"
+                var retreatCost = "0"
+
+                if(card.Weakness != null)
+                {
+                    weakness = card.Weakness
+                }
+                if(card.Resistance != null)
+                {
+                    resistance = card.Resistance
+                }
+                if(card.RetreatCost != null)
+                {
+                    retreatCost = card.RetreatCost
+                }
+
+                return `${cardType} | ${card.Name} (${card.Hp} HP) | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
+            }
+        }
+        else
+        {
+            return "Unexpected Error"
         }  
-        console.log("All Cards Loaded")
-        
-    }).catch(err => {
-        console.log(err)
-    });
+               
+    }
+    else
+    {
+        return `Could not find ${set} ${number} ${cardName}. Please check leading zeroes on the number. (Also only use this command if !card doesn't work).`
+    }
+    
 }
 
-function nthIndex(str, pat, n){
+function onCooldown(channel)
+{
+    var cooldown = commandCooldowns.find(x => x.Channel.toLowerCase() === channel.toLowerCase())
+    let timeCheck = new Date().getTime()
+        
+    return timeCheck < cooldown.Time;
+}        
+
+function setCooldown(channel)
+{    
+    let cdTime = new Date().getTime()              
+    var objIndex = commandCooldowns.findIndex((x => x.Channel.toLowerCase() === channel.toLowerCase()));
+    commandCooldowns[objIndex].Time = cdTime + 10000
+}
+
+function nthIndex(str, pat, n)
+{
     var L= str.length, i= -1;
     while(n-- && i++<L){
         i= str.indexOf(pat, i);
@@ -264,3 +372,4 @@ function populateCooldowns()
         commandCooldowns.push(new CommandCooldown(`#${channels[channel]}`, '!card', cdTime))
     }
 }
+// #endregion
