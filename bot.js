@@ -125,14 +125,19 @@ function cardCommand(msg, channel)
 {
     var cardDetails = msg.replace('!card', '')
     var setSplit  = cardDetails.split(' ')
-    if(setSplit.length < 3)
-    {
-        client.say(channel, "Please use the command as !card setAbbr cardName")
-        return
-    }
     var set = setSplit[1]
-    var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
-    var cardAttack = getCardAttack(set, cardName);
+    //check if set was supplied, if yes - normal. If not, new function
+    var isSetValid = validSet(set)
+    if(isSetValid)
+    {
+        var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
+        var cardAttack = getCardAttack(set, cardName);
+    }
+    else
+    {
+        var cardName = cardDetails
+        var cardAttack = getCardAttackWithoutSet(cardName)
+    }
     client.say(channel, cardAttack);
 }
 
@@ -340,6 +345,143 @@ function getCardAttackWithNumber(set, cardName, number)
         return `Could not find ${set} ${number} ${cardName}. Please check leading zeroes on the number. (Also only use this command if !card doesn't work).`
     }
     
+}
+
+function getCardAttackWithoutSet(cardName)
+{
+    var filterCount = allCards.filter(x => x.Name.toLowerCase() === cardName.trim().toLowerCase())
+    if(filterCount.length > 0)
+    {        
+        if(filterCount.length > 1)
+        {
+            var differentText = false;
+            var initialText = filterCount[0].CardText
+
+            for(var i in filterCount)
+            {
+                var tempText = filterCount[i].CardText
+                if(initialText != tempText)
+                {
+                    differentText = true;
+                    break
+                }
+            }
+            
+            var card = filterCount.find(x => x.Name.toLowerCase() === cardName.trim().toLowerCase())
+
+            if(!differentText || card.Type.includes("Trainer"))
+            {
+                if(card != undefined || card != null)
+                {
+                    var cardType = card.Type
+                    cardType = cardType.replace("Fire","[R]")
+                    cardType = cardType.replace("Fairy","[Y]")
+                    cardType = cardType.replace("Fighting","[F]")
+                    cardType = cardType.replace("Water","[W]")
+                    cardType = cardType.replace("Colorless","[C]")
+                    cardType = cardType.replace("Lightning","[L]")
+                    cardType = cardType.replace("Grass","[G]")
+                    cardType = cardType.replace("Psychic","[P]")
+                    cardType = cardType.replace("Darkness","[D]")
+                    cardType = cardType.replace("Metal","[M]")
+
+                    if(card.Hp == null)
+                    {
+                        return `${cardType} | ${card.Name} | ${card.Set} | ${card.CardText}`
+                    }
+                    else
+                    {
+                        var weakness = "None"
+                        var resistance = "None"
+                        var retreatCost = "0"
+
+                        if(card.Weakness != null)
+                        {
+                            weakness = card.Weakness
+                        }
+                        if(card.Resistance != null)
+                        {
+                            resistance = card.Resistance
+                        }
+                        if(card.RetreatCost != null)
+                        {
+                            retreatCost = card.RetreatCost
+                        }
+
+                        return `${cardType} | ${card.Name} (${card.Hp} HP) |  ${card.Set} | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
+                    }
+                }
+                else
+                {
+                    return "Unexpected Error"
+                }
+            }
+            else
+            {
+                var returnString = `There are ${filterCount.length} versions of this card with different text. Please supply the set with this search (ie: !card setAbbr cardName)`
+                return returnString
+            }
+        }
+        else
+        {
+            var card = allCards.find(x => x.Name.toLowerCase() === cardName.trim().toLowerCase())
+            if(card != undefined || card != null)
+            {
+                var cardType = card.Type
+                cardType = cardType.replace("Fire","[R]")
+                cardType = cardType.replace("Fairy","[Y]")
+                cardType = cardType.replace("Fighting","[F]")
+                cardType = cardType.replace("Water","[W]")
+                cardType = cardType.replace("Colorless","[C]")
+                cardType = cardType.replace("Lightning","[L]")
+                cardType = cardType.replace("Grass","[G]")
+                cardType = cardType.replace("Psychic","[P]")
+                cardType = cardType.replace("Darkness","[D]")
+                cardType = cardType.replace("Metal","[M]")
+
+                if(card.Hp == null)
+                {
+                    return `${cardType} | ${card.Name} | ${card.CardText}`
+                }
+                else
+                {
+                    var weakness = "None"
+                    var resistance = "None"
+                    var retreatCost = "0"
+
+                    if(card.Weakness != null)
+                    {
+                        weakness = card.Weakness
+                    }
+                    if(card.Resistance != null)
+                    {
+                        resistance = card.Resistance
+                    }
+                    if(card.RetreatCost != null)
+                    {
+                        retreatCost = card.RetreatCost
+                    }
+
+                    return `${cardType} | ${card.Name} (${card.Hp} HP) | ${card.Set} | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
+                }
+            }
+            else
+            {
+                return "Unexpected Error"
+            }
+        }
+        
+    }
+    else
+    {
+        return `Could not find ${cardName}`
+    }
+}
+
+function validSet(set)
+{    
+    var set = allCards.filter(x => x.Set.toLowerCase() === set.toLowerCase())
+    return set.length > 0
 }
 
 function onCooldown(channel)
