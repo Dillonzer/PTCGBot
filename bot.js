@@ -408,7 +408,7 @@ function getCardAttackWithoutSet(cardName)
                             retreatCost = card.RetreatCost
                         }
 
-                        return `${cardType} | ${card.Name} (${card.Hp} HP) |  ${card.Set} | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
+                        return `${cardType} | ${card.Name} (${card.Hp} HP) | ${card.Set} | ${card.CardText} | Weakness: ${weakness} | Resistance: ${resistance} | Retreat Cost: ${retreatCost}`
                     }
                 }
                 else
@@ -441,7 +441,7 @@ function getCardAttackWithoutSet(cardName)
 
                 if(card.Hp == null)
                 {
-                    return `${cardType} | ${card.Name} | ${card.CardText}`
+                    return `${cardType} | ${card.Name} | ${card.Set} | ${card.CardText}`
                 }
                 else
                 {
