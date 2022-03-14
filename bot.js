@@ -33,7 +33,8 @@ var channels = [
     'Azulgg',
     'RamboFW',
     'neutronptcg',
-    'sacksack17'
+    'sacksack17',
+    'Djrealmz'
   ]
 
 const opts = {
