@@ -36,8 +36,19 @@ var channels = [
     'sacksack17',
     'Djrealmz',
     'st00ben',
-    'KapuToroGang'
+    'KapuToroGang',
+    'Table500TCG',
+    'OnGaard'
   ]
+
+
+//var channels = ['dillondevaccount']
+
+var ffzChannels = [
+    //'#dillonzer',
+    //'#azulgg',
+    '#dillondevaccount'
+]
 
 const opts = {
   identity: {
@@ -142,7 +153,7 @@ function cardCommand(msg, channel)
         var cardName = cardDetails
         var cardAttack = getCardAttackWithoutSet(cardName)
     }
-    client.say(channel, cardAttack);
+    client.say(channel, ffzCheck(channel, cardAttack));
 }
 
 function cardNumCommand(msg, channel)
@@ -158,7 +169,7 @@ function cardNumCommand(msg, channel)
     var num = setSplit[2]
     var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 3))
     var cardAttack = getCardAttackWithNumber(set, cardName, num);
-    client.say(channel, cardAttack);
+    client.say(channel, ffzCheck(channel, cardAttack));
 }
 
 function helpInfo(channel)
@@ -520,5 +531,24 @@ function populateCooldowns()
     {        
         commandCooldowns.push(new CommandCooldown(`#${channels[channel]}`, '!card', cdTime))
     }
+}
+
+function ffzCheck(channel, cardAttack)
+{
+    if(ffzChannels.includes(channel.toLowerCase()))
+    {
+        cardAttack = cardAttack.replaceAll("[C]", "ptcgC ")
+        cardAttack = cardAttack.replaceAll("[D]", "ptcgD ")
+        cardAttack = cardAttack.replaceAll("[F]", "ptcgF ")
+        cardAttack = cardAttack.replaceAll("[G]", "ptcgG ")
+        cardAttack = cardAttack.replaceAll("[L]", "ptcgL ")
+        cardAttack = cardAttack.replaceAll("[M]", "ptcgM ")
+        cardAttack = cardAttack.replaceAll("[P]", "ptcgP ")
+        cardAttack = cardAttack.replaceAll("[R]", "ptcgR ")
+        cardAttack = cardAttack.replaceAll("[W]", "ptcgW ")
+        cardAttack = cardAttack.replaceAll("[Y]", "ptcgY ")
+    }
+
+    return cardAttack
 }
 // #endregion
