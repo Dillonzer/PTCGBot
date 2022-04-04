@@ -69,10 +69,21 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 // #region Bot Function
-function onMessageHandler (channel, context, msg, self) 
+async function onMessageHandler (channel, context, msg, self) 
 {
+
     if (self) { return; } // Ignore messages from the bot    
     
+    if(!(await isModInChannel(channel, 'PTCGBot')))
+    {
+        if(!onCooldown(channel))
+        {
+            setCooldown(channel)
+            client.say(channel, "Please give PTCGBot Mod to work properly.")
+            return
+        }
+    }
+
     const command = msg.split(' ');
 
     if (msg === '!card')
@@ -551,4 +562,9 @@ function ffzCheck(channel, cardAttack)
 
     return cardAttack
 }
+
+async function isModInChannel(channel, username) {
+    const list = await client.mods(channel);
+    return list.includes(username.toLowerCase());
+  }
 // #endregion
