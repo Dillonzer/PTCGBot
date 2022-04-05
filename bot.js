@@ -32,7 +32,6 @@ var channels = [
     'linty_rosecup',
     'Azulgg',
     'RamboFW',
-    'neutronptcg',
     'sacksack17',
     'Djrealmz',
     'st00ben',
