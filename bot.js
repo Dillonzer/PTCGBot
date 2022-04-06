@@ -37,7 +37,8 @@ var channels = [
     'st00ben',
     'KapuToroGang',
     'Table500TCG',
-    'OnGaard'
+    'OnGaard',
+    'mellow_magikarp'
   ]
 
 
@@ -46,7 +47,8 @@ var channels = [
 var ffzChannels = [
     '#dillonzer',
     //'#azulgg',
-    '#dillondevaccount'
+    '#dillondevaccount',
+    '#st00ben'
 ]
 
 const opts = {
