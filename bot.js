@@ -44,7 +44,7 @@ var channels = [
 //var channels = ['dillondevaccount']
 
 var ffzChannels = [
-    //'#dillonzer',
+    '#dillonzer',
     //'#azulgg',
     '#dillondevaccount'
 ]
