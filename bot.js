@@ -560,6 +560,11 @@ function ffzCheck(channel, cardAttack)
         cardAttack = cardAttack.replaceAll("[R]", "ptcgR ")
         cardAttack = cardAttack.replaceAll("[W]", "ptcgW ")
         cardAttack = cardAttack.replaceAll("[Y]", "ptcgY ")
+
+        cardAttack = cardAttack.replace("Retreat Cost: 1","Retreat Cost: ptcgC" )
+        cardAttack = cardAttack.replace("Retreat Cost: 2","Retreat Cost: ptcgC ptcgC" )
+        cardAttack = cardAttack.replace("Retreat Cost: 3","Retreat Cost: ptcgC ptcgC ptcgC" )
+        cardAttack = cardAttack.replace("Retreat Cost: 4","Retreat Cost: ptcgC ptcgC ptcgC ptcgC" )
     }
 
     return cardAttack
