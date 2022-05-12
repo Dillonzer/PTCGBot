@@ -207,17 +207,7 @@ function getCardAttack (set, cardName)
                 var card = filterCount.find(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase())
                 if(card != undefined || card != null)
                 {
-                    var cardType = card.Type
-                    cardType = cardType.replace("Fire","[R]")
-                    cardType = cardType.replace("Fairy","[Y]")
-                    cardType = cardType.replace("Fighting","[F]")
-                    cardType = cardType.replace("Water","[W]")
-                    cardType = cardType.replace("Colorless","[C]")
-                    cardType = cardType.replace("Lightning","[L]")
-                    cardType = cardType.replace("Grass","[G]")
-                    cardType = cardType.replace("Psychic","[P]")
-                    cardType = cardType.replace("Darkness","[D]")
-                    cardType = cardType.replace("Metal","[M]")
+                    var cardType = cardTypeReplace(card.Type)
 
                     if(card.Hp == null)
                     {
@@ -264,18 +254,8 @@ function getCardAttack (set, cardName)
         {
             var card = allCards.find(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase())
             if(card != undefined || card != null)
-            {
-                var cardType = card.Type
-                cardType = cardType.replace("Fire","[R]")
-                cardType = cardType.replace("Fairy","[Y]")
-                cardType = cardType.replace("Fighting","[F]")
-                cardType = cardType.replace("Water","[W]")
-                cardType = cardType.replace("Colorless","[C]")
-                cardType = cardType.replace("Lightning","[L]")
-                cardType = cardType.replace("Grass","[G]")
-                cardType = cardType.replace("Psychic","[P]")
-                cardType = cardType.replace("Darkness","[D]")
-                cardType = cardType.replace("Metal","[M]")
+            {                
+                var cardType = cardTypeReplace(card.Type)
 
                 if(card.Hp == null)
                 {
@@ -323,18 +303,8 @@ function getCardAttackWithNumber(set, cardName, number)
     {   
         var card = filterCount.find(x => x.Set.toLowerCase() === set.toLowerCase() && x.Name.toLowerCase() === cardName.trim().toLowerCase() && x.Number.toLowerCase() == number.toLowerCase())
         if(card != undefined || card != null)
-        {
-            var cardType = card.Type
-            cardType = cardType.replace("Fire","[R]")
-            cardType = cardType.replace("Fairy","[Y]")
-            cardType = cardType.replace("Fighting","[F]")
-            cardType = cardType.replace("Water","[W]")
-            cardType = cardType.replace("Colorless","[C]")
-            cardType = cardType.replace("Lightning","[L]")
-            cardType = cardType.replace("Grass","[G]")
-            cardType = cardType.replace("Psychic","[P]")
-            cardType = cardType.replace("Darkness","[D]")
-            cardType = cardType.replace("Metal","[M]")
+        {            
+            var cardType = cardTypeReplace(card.Type)
 
             if(card.Hp == null)
             {
@@ -401,17 +371,7 @@ function getCardAttackWithoutSet(cardName)
             {
                 if(card != undefined || card != null)
                 {
-                    var cardType = card.Type
-                    cardType = cardType.replace("Fire","[R]")
-                    cardType = cardType.replace("Fairy","[Y]")
-                    cardType = cardType.replace("Fighting","[F]")
-                    cardType = cardType.replace("Water","[W]")
-                    cardType = cardType.replace("Colorless","[C]")
-                    cardType = cardType.replace("Lightning","[L]")
-                    cardType = cardType.replace("Grass","[G]")
-                    cardType = cardType.replace("Psychic","[P]")
-                    cardType = cardType.replace("Darkness","[D]")
-                    cardType = cardType.replace("Metal","[M]")
+                    var cardType = cardTypeReplace(card.Type)
 
                     if(card.Hp == null)
                     {
@@ -455,17 +415,7 @@ function getCardAttackWithoutSet(cardName)
             var card = allCards.find(x => x.Name.toLowerCase() === cardName.trim().toLowerCase())
             if(card != undefined || card != null)
             {
-                var cardType = card.Type
-                cardType = cardType.replace("Fire","[R]")
-                cardType = cardType.replace("Fairy","[Y]")
-                cardType = cardType.replace("Fighting","[F]")
-                cardType = cardType.replace("Water","[W]")
-                cardType = cardType.replace("Colorless","[C]")
-                cardType = cardType.replace("Lightning","[L]")
-                cardType = cardType.replace("Grass","[G]")
-                cardType = cardType.replace("Psychic","[P]")
-                cardType = cardType.replace("Darkness","[D]")
-                cardType = cardType.replace("Metal","[M]")
+                var cardType = cardTypeReplace(card.Type)
 
                 if(card.Hp == null)
                 {
@@ -560,6 +510,7 @@ function ffzCheck(channel, cardAttack)
         cardAttack = cardAttack.replaceAll("[R]", "ptcgR ")
         cardAttack = cardAttack.replaceAll("[W]", "ptcgW ")
         cardAttack = cardAttack.replaceAll("[Y]", "ptcgY ")
+        cardAttack = cardAttack.replaceAll("[N]", "ptcgN ")
 
         cardAttack = cardAttack.replace("Retreat Cost: 1","Retreat Cost: ptcgC" )
         cardAttack = cardAttack.replace("Retreat Cost: 2","Retreat Cost: ptcgC ptcgC" )
@@ -568,6 +519,23 @@ function ffzCheck(channel, cardAttack)
     }
 
     return cardAttack
+}
+
+function cardTypeReplace(replaceCardType)
+{
+    var cardType = replaceCardType.replace("Fire","[R]")
+    cardType = cardType.replace("Fairy","[Y]")
+    cardType = cardType.replace("Fighting","[F]")
+    cardType = cardType.replace("Water","[W]")
+    cardType = cardType.replace("Colorless","[C]")
+    cardType = cardType.replace("Lightning","[L]")
+    cardType = cardType.replace("Grass","[G]")
+    cardType = cardType.replace("Psychic","[P]")
+    cardType = cardType.replace("Darkness","[D]")
+    cardType = cardType.replace("Metal","[M]")
+    cardType = cardType.replace("Dragon","[N]")
+
+    return cardType
 }
 
 async function isModInChannel(channel, username) {
