@@ -518,7 +518,7 @@ function setCooldown(channel)
 {    
     let cdTime = new Date().getTime()              
     var objIndex = commandCooldowns.findIndex((x => x.Channel.toLowerCase() === channel.toLowerCase()));
-    commandCooldowns[objIndex].Time = cdTime + 10000
+    commandCooldowns[objIndex].Time = cdTime + 5000
 }
 
 function nthIndex(str, pat, n)
