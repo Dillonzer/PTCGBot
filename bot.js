@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import tmi from 'tmi.js'
 import dotenv from 'dotenv'
+import SpellChecker from 'simple-spellchecker'
 
 dotenv.config();
 
@@ -61,6 +62,12 @@ const opts = {
 
 getAllCards()
 populateCooldowns()
+
+const dictionary = SpellChecker.getDictionarySync("pokemon")
+/* Only run after new set drops
+SpellChecker.normalizeDictionary(".\\pokemon.dic", function(err, success) {
+    if(success) console.log("The file was normalized");
+});*/ 
 
 const client = new tmi.client(opts);
 
@@ -158,16 +165,51 @@ function cardCommand(msg, channel)
     if(isSetValid)
     {
         var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
-        cardName = replaceCardName(cardName)
-        var cardAttack = getCardAttack(set, cardName);
+        cardName = replaceCardName(cardName).trim()
+        var spelledCorrectly = dictionary.spellCheck(cardName)
+        if(!spelledCorrectly)
+        {
+            var suggestions = dictionary.getSuggestions(cardName);
+            var joinedSuggestions = suggestions.join()
+            if(suggestions.length > 0)
+            {
+                client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
+            } 
+            else
+            {
+                client.say(channel, `Could not find ${cardName}.`)      
+            }
+        }
+        else
+        {
+            var cardAttack = getCardAttack(set, cardName);
+            client.say(channel, ffzCheck(channel, cardAttack));
+        }
     }
     else
     {
         var cardName = cardDetails
-        cardName = replaceCardName(cardName)
-        var cardAttack = getCardAttackWithoutSet(cardName)
+        cardName = replaceCardName(cardName).trim()
+        var spelledCorrectly = dictionary.spellCheck(cardName)
+        if(!spelledCorrectly)
+        {
+            var suggestions = dictionary.getSuggestions(cardName);
+            var joinedSuggestions = suggestions.join()
+            if(suggestions.length > 0)
+            {
+                client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
+            } 
+            else
+            {
+                client.say(channel, `Could not find ${cardName}.`)      
+            }
+        }
+        else
+        {
+            var cardAttack = getCardAttackWithoutSet(cardName)
+            client.say(channel, ffzCheck(channel, cardAttack));
+        }
     }
-    client.say(channel, ffzCheck(channel, cardAttack));
 }
 
 function cardNumCommand(msg, channel)
@@ -556,4 +598,6 @@ async function isModInChannel(channel, username) {
     const list = await client.mods(channel);
     return list.includes(username.toLowerCase());
   }
+
+
 // #endregion
