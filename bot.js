@@ -31,7 +31,6 @@ var channels = [
     'TrickyGym',
     'linty_rosecup',
     'Azulgg',
-    'RamboFW',
     'sacksack17',
     'Djrealmz',
     'st00ben',
@@ -159,11 +158,13 @@ function cardCommand(msg, channel)
     if(isSetValid)
     {
         var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
+        cardName = replaceCardName(cardName)
         var cardAttack = getCardAttack(set, cardName);
     }
     else
     {
         var cardName = cardDetails
+        cardName = replaceCardName(cardName)
         var cardAttack = getCardAttackWithoutSet(cardName)
     }
     client.say(channel, ffzCheck(channel, cardAttack));
@@ -181,6 +182,7 @@ function cardNumCommand(msg, channel)
     var set = setSplit[1]
     var num = setSplit[2]
     var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 3))
+    cardName = replaceCardName(cardName)
     var cardAttack = getCardAttackWithNumber(set, cardName, num);
     client.say(channel, ffzCheck(channel, cardAttack));
 }
@@ -536,6 +538,18 @@ function cardTypeReplace(replaceCardType)
     cardType = cardType.replace("Dragon","[N]")
 
     return cardType
+}
+
+function replaceCardName(cardName)
+{
+    cardName = cardName.replace('`', '\'')
+    cardName = cardName.replace('’', '\'')        
+    cardName = cardName.replace('‘', '\'')
+    cardName = cardName.replace('“', '\"')
+    cardName = cardName.replace('”', '\"') 
+    cardName = cardName.toLowerCase().replace("é", "e")
+
+    return cardName
 }
 
 async function isModInChannel(channel, username) {
