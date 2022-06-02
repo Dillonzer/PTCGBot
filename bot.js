@@ -52,7 +52,6 @@ client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
 client.connect();
-initialLoad()
 
 setInterval(updateChannelList, 60000);
 
@@ -116,6 +115,7 @@ async function onMessageHandler (channel, context, msg, self)
 function onConnectedHandler (addr, port) 
 {
   console.log(`* Connected to ${addr}:${port}`);
+  initialLoad()
 }
 
 function getAllCards()
