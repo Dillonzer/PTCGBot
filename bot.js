@@ -39,7 +39,8 @@ var channels = [
     'Table500TCG',
     'OnGaard',
     'mellow_magikarp',
-    'TeamPIPokemon'
+    'TeamPIPokemon',
+    'StellarWishGaming'
   ]
 
 
