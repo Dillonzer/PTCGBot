@@ -27,43 +27,19 @@ function CommandCooldown(channel, command, time)
 
 var allCards = []
 var commandCooldowns = []
-var channels = [
-    'Dillonzer',
-    'TrickyGym',
-    'linty_rosecup',
-    'Azulgg',
-    'sacksack17',
-    'Djrealmz',
-    'st00ben',
-    'KapuToroGang',
-    'Table500TCG',
-    'OnGaard',
-    'mellow_magikarp',
-    'TeamPIPokemon',
-    'StellarWishGaming'
-  ]
-
-
-//var channels = ['dillondevaccount']
-
-var ffzChannels = [
-    '#dillonzer',
-    '#azulgg',
-    '#dillondevaccount',
-    '#st00ben',
-    '#stellarwishgaming'
-]
-
-const opts = {
-  identity: {
-    username: process.env.BOT_NAME,
-    password: process.env.OAUTH_TOKEN
-  },
-  channels: channels
-};
+var channels = []
+var ffzChannels = []
 
 getAllCards()
-populateCooldowns()
+initialLoad()
+getFFZList()
+
+const opts = {
+    identity: {
+      username: process.env.BOT_NAME,
+      password: process.env.OAUTH_TOKEN
+    }
+  };
 
 const dictionary = SpellChecker.getDictionarySync("pokemon")
 /* Only run after new set drops
@@ -78,6 +54,7 @@ client.on('connected', onConnectedHandler);
 
 client.connect();
 
+setInterval(updateChannelList, 60000);
 
 // #region Bot Function
 async function onMessageHandler (channel, context, msg, self) 
@@ -101,6 +78,7 @@ async function onMessageHandler (channel, context, msg, self)
     {
         return;
     }
+
 
     if(command[0] === '!cardhelp' || command[0] === '!setcodes')
     {      
@@ -154,6 +132,95 @@ function getAllCards()
     }).catch(err => {
         console.log(err)
     });
+}
+
+function initialLoad()
+{
+    var apiCall = process.env.API_URL+"/deckutils/ptcgBot/getUserList";
+    fetch(apiCall).then(response => {
+    return response.json();
+    }).then(data => {     
+        var splitData = data['userlist'].split(',')  
+        channels = splitData
+        joinChannels()
+        
+    }).catch(err => {
+        console.log(err)
+    });
+}
+
+function updateChannelList()
+{
+    var apiCall = process.env.API_URL+"/deckutils/ptcgBot/getUserList";
+    fetch(apiCall).then(response => {
+    return response.json();
+    }).then(data => {     
+        var splitData = data['userlist'].split(',')  
+        channels = splitData
+        partChannels()
+        joinChannels()
+        getFFZList()
+        
+    }).catch(err => {
+        console.log(err)
+    });
+}
+
+function getFFZList()
+{
+    var apiCall = process.env.API_URL+"/deckutils/ptcgBot/ffz/getUserList";
+    fetch(apiCall).then(response => {
+    return response.json();
+    }).then(data => {
+        var splitData = data['userlist'].split(',')  
+        ffzChannels = splitData
+        console.log("All FFZ Channels Loaded")
+        
+    }).catch(err => {
+        console.log(err)
+    });
+}
+
+function joinChannels()
+{
+    var lowerCaseCurrentChannels = []
+    client.getChannels().forEach(function(ch) {
+        lowerCaseCurrentChannels.push(ch.toLowerCase())
+    })
+
+    channels.forEach(function(channel) {
+        if(!lowerCaseCurrentChannels.includes(channel.toLowerCase()))
+        {
+            client.join(channel).then((data) => {
+                console.log("Joined "+channel)
+                var cdTime = new Date().getTime()                
+                commandCooldowns.push(new CommandCooldown(channel, '!card', cdTime))
+            }).catch((err) => {
+                console.log(err)
+            });
+        }
+    })
+}
+
+function partChannels()
+{
+    var lowerCaseCurrentChannels = []
+    client.getChannels().forEach(function(ch) {
+        lowerCaseCurrentChannels.push(ch.toLowerCase())
+    })
+
+    lowerCaseCurrentChannels.forEach(function(channel) {
+        if(!channels.includes(channel.toLowerCase()))
+        {
+            client.part(channel).then((data) => {
+                console.log("Left "+channel)
+                var index = commandCooldowns.findIndex(x => x.Channel.toLowerCase() === channel.toLowerCase())
+                commandCooldowns.splice(index, 1)
+            }).catch((err) => {
+                console.log(err)
+            });
+        }
+    })
 }
 // #endregion
 
@@ -532,15 +599,6 @@ function nthIndex(str, pat, n)
         if (i < 0) break;
     }
     return i;
-}
-
-function populateCooldowns()
-{
-    var cdTime = new Date().getTime()
-    for(var channel in channels)
-    {        
-        commandCooldowns.push(new CommandCooldown(`#${channels[channel]}`, '!card', cdTime))
-    }
 }
 
 function ffzCheck(channel, cardAttack)
