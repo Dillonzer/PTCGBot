@@ -31,7 +31,6 @@ var channels = []
 var ffzChannels = []
 
 getAllCards()
-initialLoad()
 getFFZList()
 
 const opts = {
@@ -53,6 +52,7 @@ client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
 client.connect();
+initialLoad()
 
 setInterval(updateChannelList, 60000);
 
