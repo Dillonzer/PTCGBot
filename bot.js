@@ -174,7 +174,6 @@ function getFFZList()
     }).then(data => {
         var splitData = data['userlist'].split(',')  
         ffzChannels = splitData
-        console.log("All FFZ Channels Loaded")
         
     }).catch(err => {
         console.log(err)
