@@ -50,7 +50,8 @@ var ffzChannels = [
     '#dillonzer',
     '#azulgg',
     '#dillondevaccount',
-    '#st00ben'
+    '#st00ben',
+    '#stellarwishgaming'
 ]
 
 const opts = {
@@ -76,6 +77,7 @@ client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
 client.connect();
+
 
 // #region Bot Function
 async function onMessageHandler (channel, context, msg, self) 
