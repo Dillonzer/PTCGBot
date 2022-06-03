@@ -30,9 +30,6 @@ var commandCooldowns = []
 var channels = []
 var ffzChannels = []
 
-getAllCards()
-getFFZList()
-
 const opts = {
     identity: {
       username: process.env.BOT_NAME,
@@ -142,7 +139,9 @@ function initialLoad()
     }).then(data => {     
         var splitData = data['userlist'].split(',')  
         channels = splitData
+        getAllCards()
         joinChannels()
+        getFFZList()
         
     }).catch(err => {
         console.log(err)
@@ -173,8 +172,7 @@ function getFFZList()
     return response.json();
     }).then(data => {
         var splitData = data['userlist'].split(',')  
-        ffzChannels = splitData
-        
+        ffzChannels = splitData        
     }).catch(err => {
         console.log(err)
     });
@@ -195,7 +193,15 @@ function joinChannels()
                 var cdTime = new Date().getTime()                
                 commandCooldowns.push(new CommandCooldown(channel, '!card', cdTime))
             }).catch((err) => {
-                console.log(err)
+                if(err == 'No response from Twitch.')
+                {
+                    console.log('Issue joining '+ channel+'. Trying again...')
+                    joinChannels()
+                }
+                else
+                {
+                    console.log(err)
+                }
             });
         }
     })
@@ -655,9 +661,15 @@ function replaceCardName(cardName)
 }
 
 async function isModInChannel(channel, username) {
-    const list = await client.mods(channel);
-    return list.includes(username.toLowerCase());
-  }
+    try
+    {
+        const list = await client.mods(channel)        
+        return list.includes(username.toLowerCase());
+    }
+    catch(err) {
+        return false;
+    }
+}
 
 
 // #endregion
