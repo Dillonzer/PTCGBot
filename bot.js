@@ -196,7 +196,7 @@ function joinChannels()
                 if(err == 'No response from Twitch.')
                 {
                     console.log('Issue joining '+ channel+'. Trying again...')
-                    joinChannels()
+                    retryJoinChannels(channel)
                 }
                 else
                 {
@@ -205,6 +205,25 @@ function joinChannels()
             });
         }
     })
+}
+
+function retryJoinChannels(channel)
+{
+    client.join(channel).then((data) => {
+        console.log("Joined "+channel)
+        var cdTime = new Date().getTime()                
+        commandCooldowns.push(new CommandCooldown(channel, '!card', cdTime))
+    }).catch((err) => {
+        if(err == 'No response from Twitch.')
+        {
+            console.log('Issue joining '+ channel+'. Trying again...')
+            retryJoinChannels(channel)
+        }
+        else
+        {
+            console.log(err)
+        }
+    });
 }
 
 function partChannels()
