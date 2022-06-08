@@ -61,19 +61,7 @@ async function onMessageHandler (channel, context, msg, self)
     const command = msg.split(' ');
     
     
-    if(true)
-    {
-        if(command[0] === '!cardhelp' || command[0] === '!setcodes' || command[0] === '!card' || command[0] === '!cardnum')
-        {
-            if(!onCooldown(channel))
-            {
-                setCooldown(channel)
-                client.say(channel, "Please give PTCGBot Mod to work properly.")
-                return
-            }
-        }
-    }
-
+   
     if (msg === '!card')
     {
         return;
