@@ -61,7 +61,7 @@ async function onMessageHandler (channel, context, msg, self)
     const command = msg.split(' ');
     
     
-    if(!(await isModInChannel(channel, 'PTCGBot')))
+    if(!(await isBotAMod(channel)))
     {
         if(command[0] === '!cardhelp' || command[0] === '!setcodes' || command[0] === '!card' || command[0] === '!cardnum')
         {
@@ -682,23 +682,15 @@ function replaceCardName(cardName)
     return cardName
 }
 
-async function isModInChannel(channel, username) {
-    return true;
+function isBotAMod(channel) 
+{
+    return isModInChannel(channel, 'ptcgbot');
+}
 
-    try
-    {
-        const list = await client.mods(channel)        
-        if(!list.includes(username.toLowerCase()))
-        {
-            console.log("Not a mod in "+channel)
-            return false
-        }
-        return true
-    }
-    catch(err) {
-        console.log(err)
-        return false;
-    }
+async function isModInChannel (channel, username) 
+{
+    const list = await client.mods(channel);
+    return list.includes(username);
 }
 
 
