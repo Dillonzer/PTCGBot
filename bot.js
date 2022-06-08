@@ -61,7 +61,7 @@ async function onMessageHandler (channel, context, msg, self)
     const command = msg.split(' ');
     
     
-    if(!(await isBotAMod(channel)))
+    if(true)
     {
         if(command[0] === '!cardhelp' || command[0] === '!setcodes' || command[0] === '!card' || command[0] === '!cardnum')
         {
