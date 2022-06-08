@@ -683,6 +683,8 @@ function replaceCardName(cardName)
 }
 
 async function isModInChannel(channel, username) {
+    return true;
+
     try
     {
         const list = await client.mods(channel)        
