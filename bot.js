@@ -57,24 +57,27 @@ async function onMessageHandler (channel, context, msg, self)
 {
 
     if (self) { return; } // Ignore messages from the bot    
+
+    const command = msg.split(' ');
+    
     
     if(!(await isModInChannel(channel, 'PTCGBot')))
     {
-        if(!onCooldown(channel))
+        if(command[0] === '!cardhelp' || command[0] === '!setcodes' || command[0] === '!card' || command[0] === '!cardnum')
         {
-            setCooldown(channel)
-            client.say(channel, "Please give PTCGBot Mod to work properly.")
-            return
+            if(!onCooldown(channel))
+            {
+                setCooldown(channel)
+                client.say(channel, "Please give PTCGBot Mod to work properly.")
+                return
+            }
         }
     }
-
-    const command = msg.split(' ');
 
     if (msg === '!card')
     {
         return;
     }
-
 
     if(command[0] === '!cardhelp' || command[0] === '!setcodes')
     {      
@@ -683,9 +686,15 @@ async function isModInChannel(channel, username) {
     try
     {
         const list = await client.mods(channel)        
-        return list.includes(username.toLowerCase());
+        if(!list.includes(username.toLowerCase()))
+        {
+            console.log("Not a mod in "+channel)
+            return false
+        }
+        return true
     }
     catch(err) {
+        console.log(err)
         return false;
     }
 }
