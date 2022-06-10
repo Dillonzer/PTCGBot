@@ -25,10 +25,17 @@ function CommandCooldown(channel, command, time)
     this.Time = time
 }
 
+function ModCache(channel, isMod)
+{
+    this.Channel = channel,
+    this.IsMod = isMod
+}
+
 var allCards = []
 var commandCooldowns = []
 var channels = []
 var ffzChannels = []
+var modCache = []
 
 const opts = {
     identity: {
@@ -55,12 +62,24 @@ setInterval(updateChannelList, 60000);
 // #region Bot Function
 async function onMessageHandler (channel, context, msg, self) 
 {
-
+    modCacheRefresh(channel)
     if (self) { return; } // Ignore messages from the bot    
 
     const command = msg.split(' ');
     
-    
+    if(!isBotAMod(channel))
+    {
+        if(command[0] === '!cardhelp' || command[0] === '!setcodes' || command[0] === '!card' || command[0] === '!cardnum')
+        {
+            if(!onCooldown(channel))
+            {
+                setCooldown(channel)
+                client.say(channel, "Please give PTCGBot Mod to work properly. (If this is the first message after giving it mod don't worry, that's normal. Next one should work fine)")
+                return
+            }
+        }
+    }
+
    
     if (msg === '!card')
     {
@@ -97,7 +116,6 @@ async function onMessageHandler (channel, context, msg, self)
             console.log(`* Executed ${msg} on ${channel}`);
         }
     }
-   
 }
 
 function onConnectedHandler (addr, port) 
@@ -183,6 +201,7 @@ function joinChannels()
                 console.log("Joined "+channel)
                 var cdTime = new Date().getTime()                
                 commandCooldowns.push(new CommandCooldown(channel, '!card', cdTime))
+                modCache.push(new ModCache(channel, true))
             }).catch((err) => {
                 if(err == 'No response from Twitch.')
                 {
@@ -204,6 +223,7 @@ function retryJoinChannels(channel)
         console.log("Joined "+channel)
         var cdTime = new Date().getTime()                
         commandCooldowns.push(new CommandCooldown(channel, '!card', cdTime))
+        modCache.push(new ModCache(channel, true))
     }).catch((err) => {
         if(err == 'No response from Twitch.')
         {
@@ -230,7 +250,9 @@ function partChannels()
             client.part(channel).then((data) => {
                 console.log("Left "+channel)
                 var index = commandCooldowns.findIndex(x => x.Channel.toLowerCase() === channel.toLowerCase())
+                var modIndex = modCache.findIndex(x => x.Channel.toLowerCase() === channel.toLowerCase())
                 commandCooldowns.splice(index, 1)
+                modCache.splice(modIndex, 1)
             }).catch((err) => {
                 console.log(err)
             });
@@ -671,14 +693,15 @@ function replaceCardName(cardName)
 }
 
 function isBotAMod(channel) 
-{
-    return isModInChannel(channel, 'ptcgbot');
+{    
+    var modCheck = modCache.find(x => x.Channel.toLowerCase() === channel.toLowerCase())
+    return modCheck.IsMod
 }
 
-async function isModInChannel (channel, username) 
-{
-    const list = await client.mods(channel);
-    return list.includes(username);
+function modCacheRefresh(channel)
+{    
+    var objIndex = modCache.findIndex((x => x.Channel.toLowerCase() === channel.toLowerCase()));
+    modCache[objIndex].IsMod = client.userstate[channel].mod
 }
 
 
