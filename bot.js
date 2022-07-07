@@ -205,8 +205,9 @@ function joinChannels()
             }).catch((err) => {
                 if(err == 'No response from Twitch.')
                 {
-                    console.log('Issue joining '+ channel+'. Trying again...')
-                    retryJoinChannels(channel)
+                    var attempts = 1
+                    console.log('Issue joining '+ channel+'. Trying again... Attempt: '+attempts)
+                    retryJoinChannels(channel, attempts)
                 }
                 else
                 {
@@ -217,7 +218,7 @@ function joinChannels()
     })
 }
 
-function retryJoinChannels(channel)
+function retryJoinChannels(channel, attempts)
 {
     client.join(channel).then((data) => {
         console.log("Joined "+channel)
@@ -227,8 +228,16 @@ function retryJoinChannels(channel)
     }).catch((err) => {
         if(err == 'No response from Twitch.')
         {
-            console.log('Issue joining '+ channel+'. Trying again...')
-            retryJoinChannels(channel)
+            attempts = attempts + 1
+            console.log('Issue joining '+ channel+'. Trying again... Attempt: '+attempts)
+            if(attempts <= 3)
+            {
+                retryJoinChannels(channel, attempts)
+            }
+            else
+            {
+                console.log("Exceeded attempts for " + channel)
+            }
         }
         else
         {
