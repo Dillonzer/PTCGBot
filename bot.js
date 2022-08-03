@@ -44,11 +44,12 @@ const opts = {
     }
   };
 
+/* Only run after new set drops in CMD after getting new list of unique card names
+PS D:\Dev\Git\PTCGBot> cd .\node_modules\simple-spellchecker\     
+PS D:\Dev\Git\PTCGBot\node_modules\simple-spellchecker> node cli.js normalize "./dict/pokemon.dic"
+*/
+
 const dictionary = SpellChecker.getDictionarySync("pokemon")
-/* Only run after new set drops
-SpellChecker.normalizeDictionary(".\\pokemon.dic", function(err, success) {
-    if(success) console.log("The file was normalized");
-});*/ 
 
 const client = new tmi.client(opts);
 
