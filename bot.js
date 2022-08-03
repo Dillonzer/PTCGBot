@@ -294,7 +294,8 @@ function cardCommand(msg, channel)
             } 
             else
             {
-                client.say(channel, `Could not find ${cardName}.`)      
+                var cardAttack = getCardAttack(set, cardName);
+                client.say(channel, ffzCheck(channel, cardAttack));
             }
         }
         else
@@ -317,8 +318,9 @@ function cardCommand(msg, channel)
                 client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
             } 
             else
-            {
-                client.say(channel, `Could not find ${cardName}.`)      
+            {                
+                var cardAttack = getCardAttackWithoutSet(cardName);
+                client.say(channel, ffzCheck(channel, cardAttack));
             }
         }
         else
