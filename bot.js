@@ -688,6 +688,17 @@ function cardTypeReplace(replaceCardType)
     cardType = cardType.replace("Darkness","[D]")
     cardType = cardType.replace("Metal","[M]")
     cardType = cardType.replace("Dragon","[N]")
+    cardType = cardType.replace("FIRE","[R]")
+    cardType = cardType.replace("FAIRY","[Y]")
+    cardType = cardType.replace("FIGHTING","[F]")
+    cardType = cardType.replace("WATER","[W]")
+    cardType = cardType.replace("COLORLESS","[C]")
+    cardType = cardType.replace("LIGHTNING","[L]")
+    cardType = cardType.replace("GRASS","[G]")
+    cardType = cardType.replace("PSYCHIC","[P]")
+    cardType = cardType.replace("DARKNESS","[D]")
+    cardType = cardType.replace("METAL","[M]")
+    cardType = cardType.replace("DRAGON","[N]")
 
     return cardType
 }
