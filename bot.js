@@ -127,7 +127,7 @@ function onConnectedHandler (addr, port)
 
 function getAllCards()
 {
-    var apiCall = process.env.API_URL+"/api/cards";
+    var apiCall = "https://raw.githubusercontent.com/Dillonzer/dillonzer.github.io/master/data/cards.json";
     fetch(apiCall).then(response => {
     return response.json();
     }).then(data => {
