@@ -1,5 +1,6 @@
 # PTCG Bot
- 
+![Hosted](https://img.shields.io/badge/Hosted_On-Railways-black) ![GitHub License](https://img.shields.io/github/license/Dillonzer/cardbuddy) ![GitHub branch status](https://img.shields.io/github/checks-status/dillonzer/ptcgbot/main)
+
 PTCGBot is created and based off of [MTGBot](https://mtg.fandom.com/wiki/MTGBot). So in Twitch Chat when a user requests a card, it will show them the card text for that card!
 
 ## Commands
