@@ -279,10 +279,41 @@ function cardCommand(msg, channel)
     var set = setSplit[1]
     //check if set was supplied, if yes - normal. If not, new function
     var isSetValid = validSet(set)
-    if(isSetValid)
+    if(isSetValid && set.toLowerCase() != "mew")
     {
         var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
         cardName = replaceCardName(cardName).trim()
+        var spelledCorrectly = dictionary.spellCheck(cardName)
+        if(!spelledCorrectly)
+        {
+            var suggestions = dictionary.getSuggestions(cardName);
+            var joinedSuggestions = suggestions.join()
+            if(suggestions.length > 0)
+            {
+                client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
+            } 
+            else
+            {
+                var cardAttack = getCardAttack(set, cardName);
+                client.say(channel, ffzCheck(channel, cardAttack));
+            }
+        }
+        else
+        {
+            var cardAttack = getCardAttack(set, cardName);
+            client.say(channel, ffzCheck(channel, cardAttack));
+        }
+    }
+    else if(isSetValid && set.toLowerCase() == "mew")
+    {
+        var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
+        cardName = replaceCardName(cardName).trim()
+
+        if(cardName == "")
+        {
+            cardName = "mew"
+        }
+
         var spelledCorrectly = dictionary.spellCheck(cardName)
         if(!spelledCorrectly)
         {
