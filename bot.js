@@ -309,31 +309,53 @@ function cardCommand(msg, channel)
         var cardName = cardDetails.substring(nthIndex(cardDetails, ' ', 2))
         cardName = replaceCardName(cardName).trim()
 
-        if(cardName == "")
+        if(cardName == "" || cardName.toLowerCase() == "v" || cardName.toLowerCase() == "vmax")
         {
-            cardName = "mew"
-        }
-
-        var spelledCorrectly = dictionary.spellCheck(cardName)
-        if(!spelledCorrectly)
-        {
-            var suggestions = dictionary.getSuggestions(cardName);
-            var joinedSuggestions = suggestions.join()
-            if(suggestions.length > 0)
+            cardName = set
+            var spelledCorrectly = dictionary.spellCheck(cardName)
+            if(!spelledCorrectly)
             {
-                client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
-            } 
+                var suggestions = dictionary.getSuggestions(cardName);
+                var joinedSuggestions = suggestions.join()
+                if(suggestions.length > 0)
+                {
+                    client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
+                } 
+                else
+                {                
+                    var cardAttack = getCardAttackWithoutSet(cardName);
+                    client.say(channel, ffzCheck(channel, cardAttack));
+                }
+            }
             else
             {
-                var cardAttack = getCardAttack(set, cardName);
+                var cardAttack = getCardAttackWithoutSet(cardName)
                 client.say(channel, ffzCheck(channel, cardAttack));
             }
         }
         else
         {
-            var cardAttack = getCardAttack(set, cardName);
-            client.say(channel, ffzCheck(channel, cardAttack));
-        }
+            var spelledCorrectly = dictionary.spellCheck(cardName)
+            if(!spelledCorrectly)
+            {
+                var suggestions = dictionary.getSuggestions(cardName);
+                var joinedSuggestions = suggestions.join()
+                if(suggestions.length > 0)
+                {
+                    client.say(channel, `Could not find ${cardName}. Here are some suggestions: [${joinedSuggestions}]`)        
+                } 
+                else
+                {
+                    var cardAttack = getCardAttack(set, cardName);
+                    client.say(channel, ffzCheck(channel, cardAttack));
+                }
+            }
+            else
+            {
+                var cardAttack = getCardAttack(set, cardName);
+                client.say(channel, ffzCheck(channel, cardAttack));
+            }
+        }        
     }
     else
     {
