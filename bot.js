@@ -151,8 +151,7 @@ function initialLoad()
         channels = splitData
         getAllCards()
         joinChannels()
-        getFFZList()
-        
+        getFFZList()        
     }).catch(err => {
         console.log(err)
     });
@@ -208,7 +207,7 @@ function joinChannels()
                 {
                     var attempts = 1
                     console.log('Issue joining '+ channel+'. Trying again... Attempt: '+attempts)
-                    retryJoinChannels(channel, attempts)
+                    //retryJoinChannels(channel, attempts)
                 }
                 else
                 {
